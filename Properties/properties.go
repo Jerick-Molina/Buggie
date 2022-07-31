@@ -1,12 +1,11 @@
-// All the propeties needed for the RESTAPI
-
-package main
+package properties
 
 type User struct {
 	Id        int    `json:"Id"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Email     string `json:"Password"`
+	FirstName string `json:"FirstName"`
+	LastName  string `json:"LastName"`
+	Email     string `json:"Email"`
+	Password  string `json:"Password"`
 	Role      string `json:"Role"`
 	CompanyId int    `json:"companyId"`
 }
@@ -32,7 +31,7 @@ type Tickets struct {
 	AssignedTo  string
 	//	Date  time TODO: Figure datetime out
 	Priority  string
-	companyId string
+	CompanyId string
 	ProjectId string
 }
 

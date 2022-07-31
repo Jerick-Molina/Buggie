@@ -2,10 +2,13 @@ module github.com/Jerick-Molina/Buggie
 
 go 1.18
 
-require github.com/gin-gonic/gin v1.8.1
+require (
+	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
+	github.com/gin-gonic/gin v1.8.1
+	github.com/go-sql-driver/mysql v1.6.0
+)
 
 require (
-	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect

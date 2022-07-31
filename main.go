@@ -1,6 +1,8 @@
 package main
 
 import (
+	route "github.com/Jerick-Molina/Buggie/Router"
+	database "github.com/Jerick-Molina/Buggie/src/Database"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,5 +12,7 @@ func main() {
 
 	router := gin.Default()
 	defer router.Run(routeHost)
-	Route(router)
+	database.Open()
+	route.Route(router)
+
 }
