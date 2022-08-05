@@ -1,7 +1,9 @@
 package endpoints
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	properties "github.com/Jerick-Molina/Buggie/Properties"
 	access "github.com/Jerick-Molina/Buggie/src/Database/Access"
@@ -24,7 +26,7 @@ func CreateAccount(x *gin.Context) {
 		return
 	}
 	//Check if user already exist
-	code_Find, message_Find := access.FindAccount(&usr)
+	code_Find, message_Find := access.AccountFind(&usr)
 	if code_Find != 200 {
 		x.IndentedJSON(code_Find, message_Find)
 		return
@@ -65,7 +67,7 @@ func CreateCompany(x *gin.Context) {
 		}
 	}
 	//If valid: Checks if user exist
-	code_Exist, message_Exist := access.FindAccount(&usr)
+	code_Exist, message_Exist := access.AccountFind(&usr)
 	if code_Exist != 200 {
 		x.IndentedJSON(code_Exist, message_Exist)
 		return
@@ -104,15 +106,46 @@ func SignIn(x *gin.Context) {
 		}
 	}
 	usr.Password = security.HashPassword(usr.Password)
-	code, message := access.SignIn(&usr)
-	if code != http.StatusOK {
+	if code, message := access.SignIn(&usr); code != http.StatusOK {
 		x.IndentedJSON(code, message)
 		return
 	}
+
 	token, err := security.JwtAccessToken(usr)
 	if err != nil {
 		x.IndentedJSON(http.StatusInternalServerError, "Something went wrong on out side")
 		return
 	}
 	x.IndentedJSON(http.StatusAccepted, token)
+}
+
+func GetUsersRoles(x *gin.Context) {
+	validRoles := []string{"Admin", "Associate"}
+
+	claims, code, message := security.IsAuthorized(validRoles, x.GetHeader("Authorization"))
+	if code != http.StatusOK {
+		fmt.Println("hello")
+		x.IndentedJSON(code, message)
+		return
+	}
+	strComp := fmt.Sprintf("%v", claims["companyId"])
+	strRole := fmt.Sprintf("%v", claims["Role"])
+	compIdVal, err := strconv.ParseInt(strComp, 0, 32)
+	if err != nil {
+		fmt.Println("hello2")
+
+		x.IndentedJSON(http.StatusUnauthorized, "Something happened in our end.")
+		return
+	}
+
+	users, code, message := access.AssignmentsRole(int(compIdVal), strRole)
+	if code != http.StatusOK {
+		fmt.Println("hello")
+
+		x.JSON(code, message)
+		return
+	}
+
+	x.JSON(code, users)
+
 }

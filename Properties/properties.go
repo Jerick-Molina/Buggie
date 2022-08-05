@@ -24,21 +24,35 @@ type Projects struct {
 }
 
 type Tickets struct {
-	Id          int `json:"CompanyId"`
-	Name        string
-	Description string
-	Status      string
-	AssignedTo  string
+	Id          int    `json:"Id"`
+	Name        string `json:"Name"`
+	Description string `json:"Description"`
+	Status      string `json:"Status"`
+	AssignedTo  int    `json:"AssignedTo"`
+	CreatedBy   int    `json:"CreatedBy"`
 	//	Date  time TODO: Figure datetime out
-	Priority  string
-	CompanyId string
-	ProjectId string
+	Priority  string `json:"Priority"`
+	CompanyId int    `json:"CompanyId"`
+	ProjectId int    `json:"ProjectId"`
 }
 
 type Comments struct {
 	CompanyId int    `json:"CompanyId"`
 	ProjectId int    `json:"ProjectId"`
 	TicketId  int    `json:"TicketId"`
-	UserIdId  int    `json:"UserIdId"`
+	UserId    int    `json:"UserIdId"`
 	Message   string `json:"Message"`
+}
+
+type AssignedProject struct {
+	CompanyId    int `json:"CompanyId"`
+	ProjectId    int `json:"ProjectId"`
+	AssignedToId int `json:"AssignedTo"`
+}
+
+type AssignedTicket struct {
+	CompanyId    int `json:"CompanyId"`
+	ProjectId    int `json:"ProjectId"`
+	TicketId     int `json:"TicketId"`
+	AssignedToId int `json:"AssignedTo"`
 }

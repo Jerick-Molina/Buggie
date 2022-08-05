@@ -1,6 +1,7 @@
 package security
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -9,7 +10,7 @@ import (
 	"github.com/dgrijalva/jwt-go/v4"
 )
 
-var secretKey = []byte("yeestusfeetus")
+var secretKey = []byte("p8cafxzquew4juy1rk9f")
 
 func JwtAccessToken(u properties.User) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
@@ -33,8 +34,9 @@ func JwtAccessToken(u properties.User) (string, error) {
 }
 
 func IsAuthorized(roles []string, token string) (jwt.MapClaims, int, string) {
-	var claims jwt.MapClaims
+
 	if token != "" {
+		token = token[7:]
 		token, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
 			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, nil
@@ -42,13 +44,14 @@ func IsAuthorized(roles []string, token string) (jwt.MapClaims, int, string) {
 			return secretKey, nil
 		})
 		if err != nil {
-			return nil, http.StatusNotAcceptable, "Cannot parse token"
+			fmt.Println(err.Error())
+			return nil, http.StatusUnauthorized, "Token signature is invalid"
 		}
-		if claim, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 
 			for i := 0; i < len(roles); i++ {
 
-				if roles[i] == claim["role"] {
+				if roles[i] == claims["role"] {
 					return claims, http.StatusOK, "Valid"
 				}
 			}
@@ -57,6 +60,6 @@ func IsAuthorized(roles []string, token string) (jwt.MapClaims, int, string) {
 		return nil, http.StatusUnauthorized, "Role not valid"
 	}
 
-	return nil, http.StatusNoContent, "JWT doesn't exist"
+	return nil, http.StatusUnauthorized, "JWT doesn't exist"
 
 }

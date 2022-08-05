@@ -2,50 +2,50 @@ package access
 
 import (
 	"fmt"
+	"net/http"
 
 	properties "github.com/Jerick-Molina/Buggie/Properties"
 	database "github.com/Jerick-Molina/Buggie/src/Database"
 )
 
-func ProjectSearchByCompanyId(companyId int) {
+func ProjectSearchByCompanyId(companyId int) ([]properties.Projects, int, string) {
 
-	sql := "select * from Users"
-	var test []properties.User
 	db := database.Access()
-	if db == nil {
 
+	var projects []properties.Projects
+	sqlQuery := `select ProjectId,Name,Description from Projects where CompanyId = ?`
+
+	rows, err := db.Query(sqlQuery, companyId)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, http.StatusBadRequest, "Invalid request"
 	}
-
-	rows, errs := db.Query(sql)
-
-	if errs != nil {
-		fmt.Println(errs.Error())
-	}
-	e, errs := rows.Columns()
-
-	fmt.Println(e)
-	fmt.Println(rows.Next())
-
-	defer rows.Close()
 
 	for rows.Next() {
-
-		var usrs properties.User
-
-		err := rows.Scan(&usrs.Id, &usrs.FirstName, &usrs.LastName, &usrs.Email, &usrs.Password, &usrs.Role, &usrs.CompanyId)
-		if err != nil {
-			fmt.Println(err.Error())
+		var project properties.Projects
+		if err := rows.Scan(&project.Id, &project.Name, &project.Description); err != nil {
+			return nil, http.StatusInternalServerError, "Something happened in our end"
 		}
-		test = append(test, usrs)
+		projects = append(projects, project)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, http.StatusInternalServerError, "Something happened in our end"
+	}
+	return projects, http.StatusOK, "Valid"
 
-	fmt.Println(test)
 }
 
-func CreateProject() {
-	sql := ""
+func ProjectSearchByProjectId(projectId int, companyId int) (properties.Projects, int, string) {
+	db := database.Access()
 
-	fmt.Println(sql)
+	var projects properties.Projects
+	sqlQuery := `select Name,Description from Projects where CompanyId = ? and ProjectId = ?`
+
+	if err := db.QueryRow(sqlQuery, companyId, projectId).Scan(&projects.Name, &projects.Description); err != nil {
+		return properties.Projects{}, http.StatusBadRequest, "Invalid Project Id"
+	}
+
+	return projects, http.StatusOK, "Valid"
 }
 
 func EditProject() {

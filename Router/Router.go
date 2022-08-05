@@ -10,6 +10,7 @@ import (
 var secret []byte
 var router *gin.Engine
 
+// var Roles [4]string  {"Admin","Associate","Developer"}
 var api string = "/API"
 
 func Route(x *gin.Engine) {
@@ -18,8 +19,9 @@ func Route(x *gin.Engine) {
 	//Initialize routes
 	Account()
 	Ticket()
-	Dashboard()
+	Data()
 	Project()
+	Assigned()
 }
 
 // func isAuthorized(isAuthorized bool, roles []string, endpoint func(x *gin.Context)) (gin.HandlerFunc, bool, *jwt.MapClaims) {
@@ -64,29 +66,40 @@ func POST(rts string, handler gin.HandlerFunc) {
 
 func Account() {
 	//GET
-
+	GET("/Assign/Roles", endpoints.CreateAccount)
+	GET("/Assign/Projects", endpoints.CreateAccount)
 	//POST
 	POST("/Create/User", endpoints.CreateAccount)
 	POST("/Create/Companyt", endpoints.CreateCompany)
 	POST("/SignIn", endpoints.SignIn)
-	POST("/SignIns", NoImpletmentedException)
+	POST("/SignIns", endpoints.GetGeneralDashboard)
 }
 func Project() {
 	//GET
+	GET("/Project", endpoints.ProjectSearchBySelection)
+	GET("/Project/Create", NoImpletmentedException)
 
 	//POST
-	GET("/Project/Create", NoImpletmentedException)
 }
 
+func Assigned() {
+	//Get
+	GET("/Assigned/Roles", endpoints.GetUsersRoles)
+
+	//post
+}
 func Ticket() {
 	//GET
 
 	//POST
+	POST("/Tickets/Create", endpoints.TicketCreate)
+
 }
 
-func Dashboard() {
+func Data() {
 	//GET
-	GET("/Dashboard", NoImpletmentedException)
+	GET("/Dashboard", endpoints.GetGeneralDashboard)
+	GET("/Tickets/Create", endpoints.GetAssignedDataForTicket)
 	//POST
 }
 

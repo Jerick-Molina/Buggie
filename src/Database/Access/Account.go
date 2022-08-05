@@ -79,7 +79,7 @@ func SignIn(usr *properties.User) (int, string) {
 	return http.StatusOK, "Valid user input"
 }
 
-func FindAccount(usr *properties.User) (int, string) {
+func AccountFind(usr *properties.User) (int, string) {
 	var db = database.Access()
 
 	sqlQuery := "select Email from Users where Email = ?"
@@ -95,4 +95,68 @@ func FindAccount(usr *properties.User) (int, string) {
 	}
 
 	return http.StatusOK, "Valid user input"
+}
+
+func AccountsFindByCompany(companyId int) ([]properties.User, int, string) {
+	db := database.Access()
+	sqlQuery := "select FirstName,LastName,Email,Role from Users where CompanyId = ?"
+	var users []properties.User
+
+	rows, err := db.Query(sqlQuery, companyId)
+	if err != nil {
+		return nil, http.StatusInternalServerError, "Query Error"
+	}
+
+	for rows.Next() {
+		var usr properties.User
+
+		if err := rows.Scan(&usr.FirstName, &usr.LastName, &usr.Email, &usr.Role); err != nil {
+			return nil, http.StatusInternalServerError, "Query Error"
+		}
+		users = append(users, usr)
+	}
+
+	return users, http.StatusOK, "Valid"
+}
+
+func AccountsFindByProject(projectId int, companyId int) ([]properties.User, int, string) {
+	db := database.Access()
+	sqlQuery := `select UserId,FirstName,LastName,Email,Role from Users where UserId = any(select AssignedTo from AssignedProject where ProjectId = ? and CompanyId = ?)`
+	var users []properties.User
+
+	rows, err := db.Query(sqlQuery, projectId, companyId)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, http.StatusInternalServerError, "Query Error"
+	}
+
+	for rows.Next() {
+		var usr properties.User
+
+		if err := rows.Scan(&usr.Id, &usr.FirstName, &usr.LastName, &usr.Email, &usr.Role); err != nil {
+			return nil, http.StatusInternalServerError, "Query Error"
+		}
+		users = append(users, usr)
+	}
+
+	return users, http.StatusOK, "Valid"
+}
+
+func AccountAssignedToProject() {
+
+}
+
+func AccountAssignedToTicket(companyId int, tkt properties.Tickets) (int, string) {
+	db := database.Access()
+
+	sqlExc := "insert into AssignedProject(CompanyId,ProjectId,AssignedTo) values(?,?,?)"
+
+	results, err := db.Exec(sqlExc, companyId, tkt.ProjectId, tkt.AssignedTo)
+	if err != nil {
+		fmt.Println(err.Error())
+		return http.StatusInternalServerError, "something happened in out end"
+	}
+	fmt.Println(results)
+
+	return http.StatusOK, "Valid"
 }
