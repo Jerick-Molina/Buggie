@@ -70,7 +70,7 @@ func Account() {
 	GET("/Assign/Projects", endpoints.CreateAccount)
 	//POST
 	POST("/Create/User", endpoints.CreateAccount)
-	POST("/Create/Companyt", endpoints.CreateCompany)
+	POST("/Create/Company", endpoints.CreateCompany)
 	POST("/SignIn", endpoints.SignIn)
 	POST("/SignIns", endpoints.GetGeneralDashboard)
 }

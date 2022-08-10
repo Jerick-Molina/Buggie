@@ -7,8 +7,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 )
 
-var db *sql.DB
-var DB *sql.DB
+var Db *sql.DB
 
 func Open() {
 	cfg := mysql.Config{
@@ -20,26 +19,10 @@ func Open() {
 	}
 
 	_db, err := sql.Open("mysql", cfg.FormatDSN())
-	errr := _db.Ping()
-	if errr == nil {
+
+	if err == nil {
 		fmt.Printf("No errero")
 	}
 
-	if err != nil || errr != nil {
-		fmt.Printf("No errero")
-	}
-	db = _db
-}
-func Access() *sql.DB {
-
-	//first check if db is alive
-	err := db.Ping()
-
-	if err != nil {
-		fmt.Println("DATABASE IS NOT CONNECTED")
-		return nil
-	}
-
-	return db
-
+	Db = _db
 }
