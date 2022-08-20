@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
-
-	database "github.com/Jerick-Molina/Buggie/src/Database"
 )
 
-func CreateCompany(compName string) (int, int, string) {
-	var db = database.Access()
+func InsertCompany(compName string) (int, int) {
+
 	var companyId int
 	sqlExc := "insert into Company (Name,CompanyCode) values (?,?)"
 	sqlQuery := "select CompanyId from Company where CompanyCode = ?"
@@ -19,24 +17,18 @@ func CreateCompany(compName string) (int, int, string) {
 	if err != nil {
 		fmt.Println(err.Error())
 
-		return 0, http.StatusInternalServerError, "Something Happened internaly"
+		return 0, http.StatusInternalServerError
 	}
 	fmt.Println(result)
 
 	if err := db.QueryRow(sqlQuery, compCode).Scan(&companyId); err != nil {
 		if err == sql.ErrConnDone {
-			return 0, http.StatusUnauthorized, "Something Happened internaly"
+			return 0, http.StatusUnauthorized
 		}
 	}
 
-	return companyId, http.StatusOK, "Valid"
+	return companyId, http.StatusOK
 }
-
-// func FindCompanyByCode(code string) {
-// 	var db = database.Access()
-
-// 	sqlQuery := "find "
-// }
 
 func CreateCompanyCode() string {
 	codeLength := 8

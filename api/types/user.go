@@ -16,9 +16,17 @@ type User_Assigned_Project struct {
 	AssignedToId int `json:"AssignedId"`
 }
 
-type User_Assignesd_Ticket struct {
+type User_Assigned_Ticket struct {
 	CompanyId    int `json:"CompanyId"`
 	ProjectId    int `json:"ProjectId"`
 	TicketId     int `json:"TicketId"`
 	AssignedToId int `json:"AssignedId"`
+}
+
+type User_Commnets struct {
+	CompanyId int    `json:"CompanyId"`
+	ProjectId int    `json:"ProjectId"`
+	TicketId  int    `json:"TicketId"`
+	Comment   string `json:"Comment"`
+	//TODO: ADD date
 }
