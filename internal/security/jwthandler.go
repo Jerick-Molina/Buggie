@@ -5,21 +5,20 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Jerick-Molina/Buggie/api/types"
 	"github.com/dgrijalva/jwt-go/v4"
 )
 
 var secretKey = []byte("p8cafxzquew4juy1rk9f")
 
-func CreateAccessToken(usr types.User) (string, error) {
+func CreateAccessToken(usrId int, role string, companyId int) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
 	claims["exp"] = time.Now().Add(time.Hour * 2).Unix()
 	claims["iss"] = "localhost"
-	claims["userId"] = usr.Id
-	claims["role"] = usr.Role
-	claims["companyId"] = usr.CompanyId
+	claims["userId"] = usrId
+	claims["role"] = role
+	claims["companyId"] = companyId
 
 	tokenString, err := token.SignedString(secretKey)
 
